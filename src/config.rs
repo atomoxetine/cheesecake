@@ -1,7 +1,19 @@
-use std::env::var;
+use std::str::FromStr;
 
 use lazy_static::lazy_static;
 
+fn var<T: FromStr>(name: &'static str) -> T {
+    std::env::var(name)
+        .expect(format!("Couldn't find env variable {}", name).as_str())
+        .parse::<T>()
+        .ok()
+        .expect(format!("Couldn't parse env variable {}", name).as_str())
+}
+
+fn var_opt<T: FromStr>(name: &'static str) -> Option<T> {
+    std::env::var(name).ok()?.parse::<T>().ok()
+}
+
 lazy_static! {
-    pub static ref PORT: u16 = var("PORT").unwrap().parse::<u16>().unwrap();
+    pub static ref PORT: u16 = var("PORT");
 }
