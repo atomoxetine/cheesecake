@@ -10,6 +10,7 @@ fn var<T: FromStr>(name: &'static str) -> T {
         .expect(format!("Couldn't parse env variable {}", name).as_str())
 }
 
+#[allow(dead_code)]
 fn var_opt<T: FromStr>(name: &'static str) -> Option<T> {
     std::env::var(name).ok()?.parse::<T>().ok()
 }
