@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+
+  {% if crate::utils::environment::is_dev() %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% else %}
+  <link href="assets/tailwind.css" rel="stylesheet">
+  {% endif %}
+
+  {% block head %}{% endblock %}
+</head>
+
+<body class="bg-gray-700 w-full h-full">
+  {% block body %}{% endblock %}
+</body>
+
+</html>

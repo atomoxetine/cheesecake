@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<header class="w-full hidden md:flex flex-row justify-start gap-2 px-3 py-4 bg-gray-500" id="header">
+  <a href="/">Home</a>
+  <a href="/app">App</a>
+</header>
+<header class="w-full md:hidden gap-2 px-3 py-4 bg-gray-500" id="mobile-header">
+  <button id="header-toggle">
+    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+  </button>
+  <div class="hidden flex-col gap-2 justify-start mt-3" id="header-content">
+    <a href="/">Home</a>
+    <a href="/app">App</a>
+  </div>
+</header>
+<script>
+  $("#header-toggle").on("click", () => {
+    $("#header-content").toggleClass("hidden")
+    $("#header-content").toggleClass("flex")
+  })
+</script>
+<main>
+  {% block main %}{% endblock %}
+</main>
+{% endblock %}
