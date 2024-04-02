@@ -5,7 +5,6 @@ setup:
 setup-dev: setup
 	curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 	cargo binstall cargo-watch
-	npx tailwindcss -o ./assets/tailwind.css
 	cargo build
 
 build:
@@ -16,6 +15,9 @@ lint:
 	cargo clippy
 
 run-dev:
+	RUSTFLAGS="-Z threads=8" cargo +nightly watch -x run
+
+run-dev-stable:
 	cargo watch -x run
 
 run-prod:
