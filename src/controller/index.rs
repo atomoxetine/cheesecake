@@ -1,6 +1,6 @@
 use axum::{response::Html, routing::get, Router};
 
-use crate::{utils::minify_template::MinifyTemplate, view::index::IndexTemplate};
+use crate::view::index;
 
 pub fn router() -> Router {
     Router::new()
@@ -8,6 +8,6 @@ pub fn router() -> Router {
 }
 
 async fn root() -> Html<String> {
-    IndexTemplate {}.render_html().unwrap()
+    Html(index::render().unwrap())
 }
 

@@ -1,6 +1,6 @@
 
 setup:
-	npm install
+	pnpm install
 
 setup-dev: setup
 	curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -8,17 +8,20 @@ setup-dev: setup
 	cargo build
 
 build:
-	NODE_ENV=production npx tailwindcss -c ./tailwind.config.js -o ./assets/tailwind.css --minify
+	NODE_ENV=production npx tailwindcss -c ./tailwind.config.js -o ./src/assets/tailwind.css --minify
 	cargo build --release
 
+test:
+	cargo test
+
 lint:
-	cargo clippy
+	cargo clippy -- -D clippy::all
 
-run-dev:
-	RUSTFLAGS="-Z threads=8" cargo +nightly watch -x run
+dev-nightly:
+	RUSTFLAGS="-Z threads=8" cargo watch -x run
 
-run-dev-stable:
+dev:
 	cargo watch -x run
 
-run-prod:
-	cargo run --release
+prod:
+	ENV="PROD" cargo run --release

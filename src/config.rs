@@ -23,10 +23,10 @@ impl FromStr for Environment {
 
 fn var<T: FromStr>(name: &'static str) -> T {
     std::env::var(name)
-        .expect(format!("Couldn't find env variable {}", name).as_str())
+        .unwrap_or_else(|_| panic!("Couldn't find env variable {}", name))
         .parse::<T>()
         .ok()
-        .expect(format!("Couldn't parse env variable {}", name).as_str())
+        .unwrap_or_else(|| panic!("Couldn't parse env variable {}", name))
 }
 
 #[allow(dead_code)]
@@ -37,4 +37,10 @@ fn var_opt<T: FromStr>(name: &'static str) -> Option<T> {
 lazy_static! {
     pub static ref PORT: u16 = var("PORT");
     pub static ref ENV: Environment = var_opt("ENV").unwrap_or(Environment::DEV);
+}
+
+// helper functions
+
+pub fn is_dev() -> bool {
+    *ENV == Environment::DEV
 }

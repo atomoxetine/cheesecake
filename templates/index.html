@@ -1,7 +1,17 @@
 {% extends "base.html" %}
+{% block title %} Index {% endblock title %}
 
-{% block title %}Home{% endblock %}
-
-{% block main %}
-<h1 class="text-red-400">Testing</h1>
-{% endblock %}
+{% block body %}
+{{ header|safe }}
+<div>
+  <h1>Counter: <span id="counter">0</span></h1>
+  <button id="btn">Click me</button>
+  <script>
+    $('#btn').mousedown(() => {
+      let crr = parseInt($('#counter').html())
+      $('#counter').html(crr + 1)
+    })
+  </script>
+  <hr>
+</div>
+{% endblock body %}
