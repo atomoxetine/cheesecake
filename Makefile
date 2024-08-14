@@ -1,24 +1,24 @@
-
 setup:
 	pnpm install
 
-setup-dev: setup
-	curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-	cargo binstall cargo-watch
-	cargo build
+install: setup
+	cargo install cargo-watch
+	cargo install sqlx-cli
 
 build:
-	NODE_ENV=production npx tailwindcss -c ./tailwind.config.js -o ./src/assets/tailwind.css --minify
+	pnpm make-tailwind
 	cargo build --release
 
 test:
 	cargo test
 
 lint:
-	cargo clippy -- -D clippy::all
+	cargo clippy
 
-dev-nightly:
-	RUSTFLAGS="-Z threads=8" cargo watch -x run
+## Create a .cargo/config.toml instead and configure your IDE's rust-analyzer to use it, or else caching
+## won't work and you'll be setting yourself up for a bad time, trust me.
+# dev-nightly:
+# 	RUSTFLAGS="-Z threads=8" cargo watch -x run
 
 dev:
 	cargo watch -x run

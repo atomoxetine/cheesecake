@@ -1,4 +1,5 @@
-/target
-.env.local
 node_modules
 /assets/tailwind.css
+/target
+/Logs
+.env

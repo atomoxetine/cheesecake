@@ -5,7 +5,7 @@
   <script src="https://unpkg.com/htmx.org@1.9.11"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  {% if crate::config::is_dev() %}
+  {% if crate::configs::helpers::is_dev() %}
   <script src="https://cdn.tailwindcss.com"></script>
   {% else %}
   <link href="assets/tailwind.css" rel="stylesheet">

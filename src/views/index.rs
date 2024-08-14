@@ -1,14 +1,13 @@
-use askama::Template;
-
 use super::MinifyTemplate;
 
-#[derive(Template)]
+#[derive(askama::Template)]
 #[template(path = "index.html")]
-pub struct IndexTemplate {
-    header: String
+struct Template {
+    header: String,
 }
 
+#[allow(clippy::missing_errors_doc)]
 pub fn render() -> Result<String, askama::Error> {
     let header = super::header::render()?;
-    IndexTemplate { header }.render_minify()
+    Template { header }.render_minify()
 }
