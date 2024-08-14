@@ -1,11 +1,10 @@
-use askama::Template;
-
 use super::MinifyTemplate;
 
-#[derive(Template)]
+#[derive(askama::Template)]
 #[template(path = "header.html")]
-pub struct HeaderTemplate {}
+struct Template;
 
+#[allow(clippy::missing_errors_doc)]
 pub fn render() -> Result<String, askama::Error> {
-    HeaderTemplate {}.render_minify()
+    Template.render_minify()
 }

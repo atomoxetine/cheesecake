@@ -1,20 +1,37 @@
-use config::PORT;
+use business::repositories::DB_CONTEXT;
+use configs::environment::{HOSTNAME, PORT};
+use std::net::SocketAddr;
+use tokio::net::TcpListener;
+use tracing::{event, Level};
 
-pub mod config;
-pub mod controller;
-pub mod view;
+use cheesecake::*;
+
+#[cfg(unix)]
+#[global_allocator]
+static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[tokio::main]
 async fn main() {
-    dotenv::from_filename(".env").ok();
-    dotenv::from_filename(".env.local").ok();
+    dotenv::from_filename(concat!(env!("CARGO_MANIFEST_DIR"), "/.env")).ok();
 
-    tracing_subscriber::fmt::init();
+    // Logging - The variables are needed for the lifetime of the program
+    let _log_guards = utils::init_logging().await;
 
-    let app = controller::router();
+    // Database auto migration
+    event!(Level::INFO, "Running DB migrations...");
+    sqlx::migrate!()
+        .run(&DB_CONTEXT.pool)
+        .await
+        .unwrap_or_else(|e| panic!("Failed to migrate DB! Error: {e}"));
 
-    let host = format!("0.0.0.0:{}", *PORT);
-    let listener = tokio::net::TcpListener::bind(host).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let sock_addr = SocketAddr::from((*HOSTNAME, *PORT));
+    let listener = TcpListener::bind(sock_addr)
+        .await
+        .unwrap_or_else(|e| panic!("Failed to bind to port! Error: {e}"));
+
+    event!(Level::INFO, "Server running on http://{sock_addr}");
+    axum::serve(listener, configs::app())
+        .with_graceful_shutdown(configs::shutdown_signal())
+        .await
+        .unwrap();
 }
-

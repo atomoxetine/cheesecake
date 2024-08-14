@@ -1,11 +1,17 @@
+pub mod error;
+pub mod header;
+pub mod index;
+pub mod nested;
+pub mod not_found;
+
 use askama::Template;
 use lazy_static::lazy_static;
 use minify_html::{minify, Cfg};
 
-pub mod index;
-pub mod header;
-
 pub trait MinifyTemplate {
+    /// # Errors
+    ///
+    /// Will return `Err` if the minification fails on the template engine.
     fn render_minify(&self) -> Result<String, askama::Error>;
 }
 
@@ -27,6 +33,7 @@ where
 {
     fn render_minify(&self) -> Result<String, askama::Error> {
         let raw = self.render()?;
+        #[allow(clippy::unwrap_used)]
         Ok(std::str::from_utf8(
             minify(raw.as_bytes(), &MINIFY_CONFIG).as_slice(),
         )
@@ -34,4 +41,3 @@ where
         .to_owned())
     }
 }
-

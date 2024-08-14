@@ -1,0 +1,10 @@
+<div>
+  <h1>Whoops, an error has occurred! HTTP: {{ status_code }}</h1>
+  {% match id %}
+    {% when Some with (err_id) %}
+      <h3>Error identifier: {{ err_id }}</h3>
+    {% when None %}
+  {% endmatch %}
+  <h5>{{ curr_date }} - {{ message }}</h5>
+  <h6><a href="/">Go back to the home page</a></h6>
+</div>
