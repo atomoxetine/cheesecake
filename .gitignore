@@ -1,5 +1,6 @@
 node_modules
-/assets/tailwind.css
+/.sqlx
+/dist
 /target
 /Logs
 .env

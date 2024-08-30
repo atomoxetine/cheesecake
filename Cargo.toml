@@ -1,39 +1,56 @@
-[package]
-name = "cheesecake"
-version = "0.1.0"
-authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
-edition = "2021"
+[workspace]
+resolver = "2"
+members = [
+  "src/app",
+  "src/types",
+  "src/views",
+  "src/business/controllers",
+  "src/business/repositories",
+  "src/business/services",
+  "src/other/custom-errors",
+  "src/other/environment",
+  "src/other/utils",
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-askama = { version = "^0.12", features = ["with-axum"] }
-askama_axum = "^0.4"
-axum = "^0.7"
-dotenv = "^0.15"
-lazy_static = "^1.4"
-minify-html = "^0.15"
-serde = { version = "^1.0", features = ["derive"] }
-serde_json = "^1.0"
-tokio = { version = "^1.37", features = ["rt-multi-thread", "signal"] }
-tower = { version = "^0.4", features = ["load-shed", "limit"]}
-tower-http = { version = "^0.5", features = ["fs", "trace", "timeout"] }
-tracing = "^0.1"
-tracing-subscriber = "^0.3"
-tracing-appender = "^0.2"
-color-eyre = "^0.6"
-anyhow = { version = "^1.0", features = ["std", "backtrace"] }
-bnum = "^0.11"
-chrono = "^0.4"
-url = "^2.5"
-sqlx = { version = "^0.8", features = ["postgres", "runtime-tokio", "tls-native-tls", "chrono"] }
-futures = "^0.3"
-uuid = { version = "^1.10", features = ["v4", "fast-rng"]}
-axum-extra = { version = "^0.9" }
-derive_more = { version = "^1.0", features = ["from_str", "debug"]}
 
-[dev-dependencies]
-# Add development dependencies here if needed
 
-[target.'cfg(unix)'.dependencies]
-jemallocator = "0.5"
+# Lint groups for tracking:
+# https://doc.rust-lang.org/rustc/lints/groups.html
+# https://rust-lang.github.io/rust-clippy/master/index.html
+
+[workspace.lints.rust]
+### Lint Groups
+future_incompatible = "deny"
+keyword_idents = "deny"
+rust_2018_idioms = "deny"
+rust_2018_compatibility = "deny"
+rust_2021_compatibility = "deny"
+rust_2024_compatibility = "deny"
+let_underscore = "deny"
+nonstandard_style = "deny"
+refining_impl_trait = "deny"
+# Also, don't use allow(unused):
+# https://www.reddit.com/r/rust/comments/1enkpxh/pro_tip_use_expectunused_upcoming_181_release/
+unused = "warn"
+
+### Overrides
+unsafe_code = { level = "forbid", priority = 1 }
+unused_imports = { level = "deny", priority = 1 }
+
+
+
+
+[workspace.lints.clippy]
+### Lint Groups
+complexity = "deny"
+correctness = "deny"
+nursery = "deny"
+pedantic = "deny"
+perf = "deny"
+style = "deny"
+suspicious = "deny"
+
+### Overrides
+missing_errors_doc = { level = "warn", priority = 1 }
+missing_panics_doc = { level = "warn", priority = 1 }
