@@ -1,0 +1,15 @@
+[package]
+name = "environment"
+version = "0.1.0"
+authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+lazy_static = "^1.4"
+tracing = "^0.1"

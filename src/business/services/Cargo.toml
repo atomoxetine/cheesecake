@@ -1,0 +1,13 @@
+[package]
+name = "services"
+version = "0.1.0"
+authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies]

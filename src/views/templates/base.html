@@ -1,0 +1,29 @@
+{# base #}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="/assets/lib/htmx-1.9.12.min.js"></script>
+  <script src="/assets/lib/jquery-3.7.1.min.js"></script>
+
+  {% if env_is_dev %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% else %}
+  <link href="/assets/tailwind.css" rel="stylesheet">
+  {% endif %}
+
+  {% block head %}{% endblock head %}
+</head>
+
+<body class="bg-gray-200">
+  {% block body %}{% endblock body %}
+  <dialog id="htmx-error-dialog" class="p-3 backdrop:bg-black backdrop:opacity-50">
+    <div><button class="text-2xl font-bold" id="htmx-error-close">X</button></div>
+    <hr><br>
+    <div id="htmx-error-content"></div>
+  </dialog>
+</body>
+<script src="/assets/htmx-error-handler.js"></script>
+
+</html>

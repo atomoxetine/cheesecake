@@ -1,27 +1,34 @@
 setup:
-	pnpm install
-
-install: setup
-	cargo install cargo-watch
+	cp -n .env.example .env
+	cd build_utils && pnpm install
 	cargo install sqlx-cli
 
+clean:
+	rm -rf dist/assets dist/Logs dist/app build_utils/node_modules Logs # Keeps .env
+	cargo clean
+
 build:
-	pnpm make-tailwind
-	cargo build --release
+	rm -rf dist/assets dist/Logs dist/app # Keeps .env
+	mkdir -p dist
+	cargo build -p app --release
+	cp target/release/app dist/
+	cd build_utils && zsh build-assets.zsh
+	cd build_utils && pnpm make-tailwind
+	cp -n .env dist/.env
 
 test:
 	cargo test
 
 lint:
-	cargo clippy
+	cargo clippy --fix
 
-## Create a .cargo/config.toml instead and configure your IDE's rust-analyzer to use it, or else caching
-## won't work and you'll be setting yourself up for a bad time, trust me.
-# dev-nightly:
-# 	RUSTFLAGS="-Z threads=8" cargo watch -x run
+force-lint:
+	cargo clippy --fix --allow-dirty --allow-staged
 
 dev:
-	cargo watch -x run
+	RUST_SPANTRACE=1 RUST_BACKTRACE=full RUST_LIB_BACKTRACE=1 cargo run -p app
 
-prod:
-	ENV="PROD" cargo run --release
+prod: build
+	cd dist && ./app
+
+.PHONY: test lint force-lint dev prod

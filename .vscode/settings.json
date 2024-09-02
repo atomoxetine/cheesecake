@@ -4,4 +4,5 @@
   "rust-analyzer.cargo.extraEnv": {
       "RUSTFLAGS": ""
   },
+  "makefile.configureOnOpen": false,
 }

@@ -1,0 +1,20 @@
+[package]
+name = "repositories"
+version = "0.1.0"
+authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+lazy_static = "^1.4"
+sqlx = { version = "^0.8", features = ["postgres", "runtime-tokio", "tls-native-tls", "chrono"] }
+environment = { path = "../../other/environment" }
+anyhow = { version = "^1.0", features = ["std", "backtrace"] }
+tokio = "^1.37"
+tracing = "^0.1"
+async_once = "^0.2"

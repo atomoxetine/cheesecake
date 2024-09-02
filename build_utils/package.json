@@ -1,0 +1,15 @@
+{
+  "name": "cheesecake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "make-tailwind": "NODE_ENV=production npx tailwindcss -c ./tailwind.config.js -o ../dist/assets/tailwind.css --minify"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tailwindcss": "^3.4.3",
+    "uglify-js": "^3.19.2"
+  }
+}

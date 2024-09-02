@@ -1,0 +1,13 @@
+{# error #}
+
+<div>
+  <h1>Whoops, an error has occurred! HTTP {{ status_code }}</h1>
+  {% if id %}
+  <h3>Error identifier: {{ id }}</h3>
+  {% endif %}
+  <h3>{{ curr_date }}</h3>
+  <h3>{{ message }}</h3>
+  {% if show_back_anchor %}
+  <h4><a href="/">Go back to the home page</a></h4>
+  {% endif %}
+</div>
