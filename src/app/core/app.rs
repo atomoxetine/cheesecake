@@ -7,7 +7,6 @@ use axum::{
     Router,
 };
 use controllers::Routes;
-use custom_errors::err_response::ErrResponse;
 use environment::ENV;
 use std::{borrow::Cow, time::Duration};
 use tower::{
@@ -17,6 +16,7 @@ use tower::{
 use tower_http::{
     services::ServeDir, timeout::TimeoutLayer, trace::TraceLayer,
 };
+use types::api::ErrResponse;
 
 pub fn app() -> Router {
     Router::new()
@@ -41,8 +41,8 @@ pub fn app() -> Router {
         .layer(TraceLayer::new_for_http())
 }
 
-async fn fallback() -> Result<impl IntoResponse, ErrResponse> {
-    Ok((StatusCode::NOT_FOUND, "".into_response()))
+async fn fallback() -> impl IntoResponse {
+    (StatusCode::NOT_FOUND, "".into_response())
 }
 
 async fn handle_error(error: BoxError) -> Response<Body> {

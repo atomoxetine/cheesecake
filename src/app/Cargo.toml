@@ -17,6 +17,7 @@ workspace = true
 [dependencies]
 repositories = { path = "../business/repositories" }
 environment = { path = "../other/environment" }
+types = { path = "../types" }
 tokio = { version = "^1.41", features = ["rt-multi-thread", "signal"] }
 tracing = "^0.1"
 dotenv = "^0.15"
@@ -29,7 +30,6 @@ sqlx = { version = "^0.8", features = [
 ] }
 axum = "^0.7"
 controllers = { path = "../business/controllers" }
-custom-errors = { path = "../other/custom-errors" }
 anyhow = { version = "^1.0", features = ["std", "backtrace"] }
 tower = { version = "^0.4", features = ["load-shed", "limit"] }
 tower-http = { version = "^0.5", features = ["fs", "trace", "timeout"] }

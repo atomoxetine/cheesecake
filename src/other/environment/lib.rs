@@ -167,10 +167,13 @@ impl EnvLock {
         Self(OnceLock::new())
     }
 
+    /// # Panics
+    ///
+    /// When the environment is already initialized.
     pub fn init(&self, workspace_dir: &'static Path) {
         self.0
             .set(Environment::new(workspace_dir))
-            .unwrap_or_else(|_| panic!("Failed to initialize environment"));
+            .unwrap_or_else(|_| panic!("Tried to set environment twice!"));
     }
 }
 

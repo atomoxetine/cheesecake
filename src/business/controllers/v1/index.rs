@@ -1,22 +1,21 @@
-use axum::http::StatusCode;
+use axum::{http::StatusCode, response::IntoResponse};
 
 use axum::response::Json;
 use axum_extra::extract::WithRejection;
-use custom_errors::err_response::{res, JsonResult};
-use types::api;
 
 use axum::Json as JsonExt;
 use serde::{Deserialize, Serialize};
+use types::api::Response;
 
-use custom_errors::app_rejection::WithJsonRejection;
+use crate::app_rejection::WithJsonRejection;
 
 pub async fn get(
     WithRejection(JsonExt(json), _): WithJsonRejection<JsonExt<Input>>,
-) -> JsonResult {
-    let response = api::Response::success(Output {
+) -> impl IntoResponse {
+    let response = Response::success(Output {
         example_output: json.example_input,
     });
-    res((StatusCode::OK, Json(response)))
+    (StatusCode::OK, Json(response)).into_response()
 }
 
 #[derive(Deserialize)]

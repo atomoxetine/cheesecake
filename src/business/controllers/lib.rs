@@ -1,7 +1,7 @@
-mod index;
-mod nested;
+mod app_rejection;
+mod v1;
 
-use axum::{routing::get, Router};
+use axum::Router;
 
 pub trait Routes {
     #[must_use]
@@ -9,7 +9,6 @@ pub trait Routes {
 }
 impl Routes for Router {
     fn configure_routes(self) -> Self {
-        self.route("/", get(index::get))
-            .nest("/nested", nested::router())
+        self.nest("/api", Self::new().nest("/v1", v1::router()))
     }
 }

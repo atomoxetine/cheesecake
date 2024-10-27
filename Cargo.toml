@@ -6,7 +6,6 @@ members = [
   "src/business/controllers",
   "src/business/repositories",
   "src/business/services",
-  "src/other/custom-errors",
   "src/other/environment",
   "src/other/utils",
 ]

@@ -6,10 +6,8 @@ use axum::extract::rejection::{
 };
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::Json;
 use axum_extra::extract::WithRejection;
-
-use types::api;
+use types::api::ErrResponse;
 
 #[derive(Debug)]
 pub struct AppRejection {
@@ -34,8 +32,8 @@ impl IntoResponse for AppRejection {
             message,
             status_code,
         } = self;
-        let api_response = api::Response::<()>::error(message, None);
-        (status_code, Json(api_response)).into_response()
+        let api_failure = ErrResponse::error(status_code, message);
+        api_failure.into_response()
     }
 }
 

@@ -1,6 +1,5 @@
 setup:
 	cp -n .env.example .env
-	cd build_utils && pnpm install
 	cargo install sqlx-cli
 
 clean:
@@ -12,8 +11,6 @@ build:
 	mkdir -p dist
 	cargo build -p app --release
 	cp target/release/app dist/
-	cd build_utils && zsh build-assets.zsh
-	cd build_utils && pnpm make-tailwind
 	cp -n .env dist/.env
 
 test:
