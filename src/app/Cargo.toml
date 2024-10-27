@@ -14,7 +14,7 @@ workspace = true
 [dependencies]
 repositories = { path = "../business/repositories" }
 environment = { path = "../other/environment" }
-tokio = { version = "^1.37", features = ["rt-multi-thread", "signal"] }
+tokio = { version = "^1.41", features = ["rt-multi-thread", "signal"] }
 tracing = "^0.1"
 dotenv = "^0.15"
 utils = { path = "../other/utils" }
