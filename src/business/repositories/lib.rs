@@ -5,7 +5,7 @@ use sqlx::{Error, Postgres, Transaction};
 use std::time::Duration;
 use tracing::{event, Level};
 
-use environment::{DATABASE_URL, DB_CONN_POOL_MAX};
+use environment::{owned_var, owned_var_or};
 use tokio::{select, time};
 
 /// # Loadable<T>
@@ -36,9 +36,11 @@ impl Database {
     ///
     /// Panics when connection pool fails to initialize.
     async fn init() -> Self {
+        let db_url: String = owned_var("DATABASE_URL");
+        let conn_pool_max: u32 = owned_var_or("DB_CONN_POOL_MAX", 100);
         let pool = PgPoolOptions::new()
-            .max_connections(*DB_CONN_POOL_MAX)
-            .connect(*DATABASE_URL)
+            .max_connections(conn_pool_max)
+            .connect(&db_url)
             .await
             .unwrap_or_else(|e| {
                 panic!("Failed to connect to Postgres DB! Error: {e}")

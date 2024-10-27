@@ -1,5 +1,4 @@
-use environment::{HOSTNAME, PORT, WORKSPACE_DIR};
-#[cfg(not(debug_assertions))]
+use environment::{get_workspace_dir, ENV};
 use repositories::Database;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
@@ -17,13 +16,15 @@ static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[tokio::main]
 async fn main() {
-    dotenv::from_filename(WORKSPACE_DIR.join(".env")).ok();
+    let workspace_dir = get_workspace_dir();
+    dotenv::from_filename(workspace_dir.join(".env")).ok();
+    ENV.init(workspace_dir);
+
     // Logging - The variables are needed for the lifetime of the program
     let _log_guards = utils::init_logging().await;
 
     // skip migrations for faster development experience
-    #[cfg(not(debug_assertions))]
-    {
+    if cfg!(not(debug_assertions)) {
         // Database auto migration
         event!(Level::INFO, "Running DB migrations...");
         sqlx::migrate!()
@@ -35,7 +36,7 @@ async fn main() {
     #[cfg(debug_assertions)]
     views::setup_hotwatch();
 
-    let sock_addr = SocketAddr::from((*HOSTNAME, *PORT));
+    let sock_addr = SocketAddr::from((ENV.hostname, ENV.port));
     let listener = TcpListener::bind(sock_addr)
         .await
         .unwrap_or_else(|e| panic!("Failed to bind to port! Error: {e}"));

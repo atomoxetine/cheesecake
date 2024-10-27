@@ -2,6 +2,7 @@ use axum::http::StatusCode;
 
 use axum::response::Json;
 use custom_errors::err_response::{res, JsonResult};
+use environment::ENV;
 use tracing::{event, Level};
 use types::api;
 
@@ -14,7 +15,6 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use custom_errors::app_rejection::WithJsonRejection;
-use environment::DOMAIN;
 
 pub async fn get(
     cookie_jar: CookieJar,
@@ -40,7 +40,7 @@ pub async fn get(
     };
 
     let cookie = Cookie::build(("example_cookie", "example"))
-        .domain(*DOMAIN)
+        .domain(&*ENV.domain)
         .path("/")
         .secure(false)
         .http_only(false)

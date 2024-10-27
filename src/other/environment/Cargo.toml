@@ -1,7 +1,10 @@
 [package]
 name = "environment"
 version = "0.1.0"
-authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
+authors = [
+    "Elaina <17bestradiol@proton.me>",
+    "Emily <snri.atomoxetine@proton.me>",
+]
 edition = "2021"
 
 [lib]
@@ -13,3 +16,4 @@ workspace = true
 [dependencies]
 lazy_static = "^1.4"
 tracing = "^0.1"
+anyhow = "^1.0"

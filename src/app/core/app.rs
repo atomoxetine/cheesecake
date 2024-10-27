@@ -8,7 +8,7 @@ use axum::{
 };
 use controllers::Routes;
 use custom_errors::err_response::{ErrResponse, HtmlKind, JsonKind};
-use environment::WORKSPACE_DIR;
+use environment::ENV;
 use std::{borrow::Cow, time::Duration};
 use tower::{
     limit::ConcurrencyLimitLayer, load_shed::LoadShedLayer, BoxError,
@@ -22,7 +22,10 @@ use views::not_found;
 pub fn app() -> Router {
     Router::new()
         // Serve static files from the `assets` directory
-        .nest_service("/assets", ServeDir::new(WORKSPACE_DIR.join("assets")))
+        .nest_service(
+            "/assets",
+            ServeDir::new(ENV.workspace_dir.join("assets")),
+        )
         .configure_routes()
         .fallback(fallback)
         // Insert here all layers that might fail. Make sure to treat the error in `handle_error`.

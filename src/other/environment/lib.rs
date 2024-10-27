@@ -1,23 +1,28 @@
+use std::ops::Deref;
+use std::path::Path;
 use std::str::FromStr;
+use std::sync::OnceLock;
 
 mod environment;
+use anyhow::bail;
 pub use environment::*;
 
-/// Utility to attempt leaking a Box to your desired static reference type.
-fn try_leak<ToLeak, R: ?Sized>(to_leak: ToLeak) -> Option<&'static R>
-where
-    Box<R>: TryFrom<ToLeak>,
-{
-    let leaked: &'static R = Box::<R>::try_from(to_leak).ok().map(Box::leak)?;
-    Some(leaked)
-}
-
-/// Useful when you want to handle the Option yourself, and do not want the
+/// Useful when you want to handle the Result yourself, and do not want the
 /// result to be leaked.
 ///
-/// The leaking version of this is `var_opt`.
-fn owned_var_opt<T: FromStr>(name: &'static str) -> Option<T> {
-    std::env::var(name).ok()?.parse::<T>().ok()
+/// The leaking version of this is `var_try`.
+///
+/// # Errors
+/// When the environment variable is not found or when the parsing fails for R.
+pub fn owned_var_try<T: FromStr>(name: &'static str) -> Result<T, anyhow::Error>
+where
+    anyhow::Error: From<<T as FromStr>::Err>,
+{
+    let var = std::env::var(name)?;
+    if var.is_empty() {
+        bail!("Empty environment variable {name}!");
+    }
+    Ok(var.parse::<T>()?)
 }
 
 /// Useful when your program requires a variable to be defined and cannot provide a
@@ -28,8 +33,12 @@ fn owned_var_opt<T: FromStr>(name: &'static str) -> Option<T> {
 ///
 /// # Panics
 /// When the environment variable is not found or when the parsing fails for T.
-fn owned_var<T: FromStr>(name: &'static str) -> T {
-    owned_var_opt(name).unwrap_or_else(|| {
+#[must_use]
+pub fn owned_var<T: FromStr>(name: &'static str) -> T
+where
+    anyhow::Error: From<<T as FromStr>::Err>,
+{
+    owned_var_try(name).unwrap_or_else(|_| {
         panic!("Couldn't find or parse env variable {name} for given type")
     })
 }
@@ -39,35 +48,75 @@ fn owned_var<T: FromStr>(name: &'static str) -> T {
 /// E.g.: Any Copy type. Not worth leaking.
 ///
 /// The leaking version of this function is `var_or`.
-fn owned_var_or<T: FromStr>(name: &'static str, default: T) -> T {
-    owned_var_opt(name).unwrap_or(default)
+pub fn owned_var_or<T: FromStr>(name: &'static str, default: T) -> T
+where
+    anyhow::Error: From<<T as FromStr>::Err>,
+{
+    owned_var_try(name).unwrap_or(default)
 }
 
-/// Useful when you want to handle the Option yourself.
+/// Useful when you want to provide a default value for the environment variable,
+/// but you do not want the parsed result to be leaked or static. Use this over
+/// `owned_var_or` when you need to provide a closure for the default value.
+///
+/// The leaking version of this function is `var_or_else`.
+pub fn owned_var_or_else<T: FromStr, V: FnOnce() -> T>(
+    name: &'static str,
+    default: V,
+) -> T
+where
+    anyhow::Error: From<<T as FromStr>::Err>,
+{
+    owned_var_try(name).unwrap_or_else(|_| default())
+}
+
+/// Utility to attempt leaking a Box to your desired static reference type.
+fn try_leak<ToLeak, R: ?Sized>(
+    to_leak: ToLeak,
+) -> Result<&'static R, <Box<R> as TryFrom<ToLeak>>::Error>
+where
+    Box<R>: TryFrom<ToLeak>,
+{
+    let leaked: &'static R = Box::<R>::try_from(to_leak).map(Box::leak)?;
+    Ok(leaked)
+}
+
+/// Useful when you want to handle the Result yourself.
 ///
 /// # Leaks
-/// This method will leak the parsed value, if any.
-fn var_opt<Parsed: FromStr, R: ?Sized>(name: &'static str) -> Option<&'static R>
+/// This function will leak the parsed value, if any.
+///
+/// # Errors
+/// This function will error if it fails to parse the value, or the environment variable
+/// is not found
+pub fn var_try<Parsed: FromStr, R: ?Sized>(
+    name: &'static str,
+) -> Result<&'static R, anyhow::Error>
 where
     Box<R>: TryFrom<Parsed>,
+    anyhow::Error: From<<Box<R> as TryFrom<Parsed>>::Error>
+        + From<<Parsed as FromStr>::Err>,
 {
-    try_leak(owned_var_opt::<Parsed>(name)?)
+    Ok(try_leak(owned_var_try::<Parsed>(name)?)?)
 }
 
 /// Useful when your program requires a variable to be defined and cannot
 /// provide a default alternative.
 ///
 /// # Leaks
-/// This method will leak the parsed value.
+/// This function will leak the parsed value.
 ///
 /// # Panics
 /// When the environment variable is not found or when the parsing fails for R.
-fn var<Parsed: FromStr, R: ?Sized>(name: &'static str) -> &'static R
+#[must_use]
+pub fn var<Parsed: FromStr, R: ?Sized>(name: &'static str) -> &'static R
 where
     Box<R>: TryFrom<Parsed>,
+    anyhow::Error: From<<Box<R> as TryFrom<Parsed>>::Error>
+        + From<<Parsed as FromStr>::Err>,
 {
-    var_opt(name).unwrap_or_else(|| {
-        panic!("Couldn't find or parse env variable {name} for given type")
+    var_try(name).unwrap_or_else(|e| {
+        panic!("Couldn't find or parse env variable {name} for given type: {e}")
     })
 }
 
@@ -76,15 +125,17 @@ where
 /// E.g.: A string literal that is stored in the binary.
 ///
 /// # Leaks
-/// This method will leak the parsed value.
-fn var_or<Parsed: Into<Box<R>> + FromStr, R: ?Sized>(
+/// This function will leak the parsed value.
+pub fn var_or<Parsed: FromStr, R: ?Sized>(
     name: &'static str,
     default: &'static R,
 ) -> &'static R
 where
     Box<R>: TryFrom<Parsed>,
+    anyhow::Error: From<<Box<R> as TryFrom<Parsed>>::Error>
+        + From<<Parsed as FromStr>::Err>,
 {
-    var_opt(name).unwrap_or(default)
+    var_try(name).unwrap_or(default)
 }
 
 /// Useful when you want to provide a default value for the environment variable,
@@ -92,9 +143,9 @@ where
 /// E.g.: An owned `PathBuf` -> A `&'static Path`.
 ///
 /// # Leaks
-/// This method will leak the parsed or the default value.
-fn var_or_else<
-    Parsed: Into<Box<R>> + FromStr + Sized,
+/// This function will leak the parsed or the default value.
+pub fn var_or_else<
+    Parsed: Into<Box<R>> + FromStr,
     R: ?Sized,
     V: FnOnce() -> Parsed,
 >(
@@ -103,6 +154,38 @@ fn var_or_else<
 ) -> &'static R
 where
     Box<R>: TryFrom<Parsed>,
+    anyhow::Error: From<<Box<R> as TryFrom<Parsed>>::Error>
+        + From<<Parsed as FromStr>::Err>,
 {
     var_or(name, Box::leak(default().into()))
+}
+
+pub struct EnvLock(OnceLock<Environment>);
+
+impl EnvLock {
+    const fn new() -> Self {
+        Self(OnceLock::new())
+    }
+
+    pub fn init(&self, workspace_dir: &'static Path) {
+        self.0
+            .set(Environment::new(workspace_dir))
+            .unwrap_or_else(|_| panic!("Failed to initialize environment"));
+    }
+}
+
+impl Deref for EnvLock {
+    type Target = Environment;
+
+    fn deref(&self) -> &Self::Target {
+        self.0
+            .get()
+            .unwrap_or_else(|| panic!("Environment not initialized"))
+    }
+}
+
+impl AsRef<Environment> for EnvLock {
+    fn as_ref(&self) -> &Environment {
+        self
+    }
 }
