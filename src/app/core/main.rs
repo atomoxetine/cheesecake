@@ -33,9 +33,6 @@ async fn main() {
             .unwrap_or_else(|e| panic!("Failed to migrate DB! Error: {e}"));
     }
 
-    #[cfg(debug_assertions)]
-    views::setup_hotwatch();
-
     let sock_addr = SocketAddr::from((ENV.hostname, ENV.port));
     let listener = TcpListener::bind(sock_addr)
         .await

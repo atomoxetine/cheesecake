@@ -3,7 +3,6 @@ resolver = "2"
 members = [
   "src/app",
   "src/types",
-  "src/views",
   "src/business/controllers",
   "src/business/repositories",
   "src/business/services",
@@ -11,8 +10,6 @@ members = [
   "src/other/environment",
   "src/other/utils",
 ]
-
-
 
 
 # Lint groups for tracking:
@@ -37,8 +34,6 @@ unused = "warn"
 ### Overrides
 unsafe_code = { level = "forbid", priority = 1 }
 unused_imports = { level = "deny", priority = 1 }
-
-
 
 
 [workspace.lints.clippy]

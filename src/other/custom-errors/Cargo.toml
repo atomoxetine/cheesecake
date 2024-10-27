@@ -1,7 +1,10 @@
 [package]
 name = "custom-errors"
 version = "0.1.0"
-authors = ["Elaina <17bestradiol@proton.me>", "Emily <snri.atomoxetine@proton.me>"]
+authors = [
+    "Elaina <17bestradiol@proton.me>",
+    "Emily <snri.atomoxetine@proton.me>",
+]
 edition = "2021"
 
 [lib]
@@ -13,8 +16,7 @@ workspace = true
 [dependencies]
 axum = "^0.7"
 tracing = "^0.1"
-uuid = { version = "^1.11", features = ["v4", "fast-rng"]}
+uuid = { version = "^1.11", features = ["v4", "fast-rng"] }
 anyhow = { version = "^1.0", features = ["std", "backtrace"] }
-axum-extra = { version = "^0.9", features = ["cookie"] }
+axum-extra = { version = "^0.9" }
 types = { path = "../../types" }
-views = { path = "../../views" }

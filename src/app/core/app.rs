@@ -3,11 +3,11 @@ use axum::{
     body::Body,
     error_handling::HandleErrorLayer,
     http::{Response, StatusCode},
-    response::{Html, IntoResponse},
+    response::IntoResponse,
     Router,
 };
 use controllers::Routes;
-use custom_errors::err_response::{ErrResponse, HtmlKind, JsonKind};
+use custom_errors::err_response::ErrResponse;
 use environment::ENV;
 use std::{borrow::Cow, time::Duration};
 use tower::{
@@ -17,7 +17,6 @@ use tower::{
 use tower_http::{
     services::ServeDir, timeout::TimeoutLayer, trace::TraceLayer,
 };
-use views::not_found;
 
 pub fn app() -> Router {
     Router::new()
@@ -42,8 +41,8 @@ pub fn app() -> Router {
         .layer(TraceLayer::new_for_http())
 }
 
-async fn fallback() -> Result<impl IntoResponse, ErrResponse<HtmlKind>> {
-    Ok((StatusCode::NOT_FOUND, Html(not_found::render()?)))
+async fn fallback() -> Result<impl IntoResponse, ErrResponse> {
+    Ok((StatusCode::NOT_FOUND, "".into_response()))
 }
 
 async fn handle_error(error: BoxError) -> Response<Body> {
@@ -57,5 +56,5 @@ async fn handle_error(error: BoxError) -> Response<Body> {
     }
 
     // Handles any other unexpected error just in case
-    ErrResponse::<JsonKind>::from(anyhow!(error)).into_response()
+    ErrResponse::from(anyhow!(error)).into_response()
 }

@@ -17,12 +17,11 @@ use std::{
     path::Path,
 };
 
-use crate::{owned_var_or, try_leak, var_or, EnvLock};
+use crate::{owned_var_or, try_leak, EnvLock};
 
 pub struct Environment {
     pub hostname: IpAddr,
     pub port: u16,
-    pub domain: &'static str,
     pub workspace_dir: &'static Path,
 }
 
@@ -34,7 +33,6 @@ impl Environment {
         Self {
             hostname: owned_var_or("HOSTNAME", IpAddr::V4(Ipv4Addr::LOCALHOST)),
             port: owned_var_or("PORT", 3000),
-            domain: var_or::<String, _>("DOMAIN", "localhost"),
             workspace_dir,
         }
     }

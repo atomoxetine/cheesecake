@@ -60,7 +60,7 @@ impl<E: Into<anyhow::Error>> From<E> for AppException {
     }
 }
 
-impl<Kind, E: Into<AppException>> From<E> for ErrResponse<Kind> {
+impl<E: Into<AppException>> From<E> for ErrResponse {
     fn from(source: E) -> Self {
         Self::new(
             "Internal Server Error".to_string(),
